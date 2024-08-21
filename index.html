@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coinsspor Node Center Cosmos Project Auto-Install Script Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        h1 {
+            color: #333;
+            margin-left: 80px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        .example-btn {
+            background-color: #007bff;
+        }
+        .example-btn:hover {
+            background-color: #0056b3;
+        }
+        .warning {
+            color: red;
+            font-weight: bold;
+            display: none;
+            margin-top: 10px;
+        }
+        img.logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 80px;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="logom.png" alt="Logo" class="logo">
+    <h1>Coinsspor Node Center Cosmos Project Auto-Install Script Generator</h1>
+    <p><a href="https://nodescenter.coinsspor.com">Visit our website: nodescenter.coinsspor.com</a></p>
+
+    <label for="wallet">WALLET Name: <small>(e.g., mywallet)</small></label>
+    <input type="text" id="wallet" placeholder="Enter WALLET name">
+
+    <label for="moniker">MONIKER: <small>(e.g., mymoniker)</small></label>
+    <input type="text" id="moniker" placeholder="Enter MONIKER">
+
+    <label for="port">PORT (default port=26): <small>(e.g., 17)</small></label>
+    <input type="text" id="port" placeholder="Enter PORT number">
+
+    <label for="chain_id">Chain ID: <small>(e.g., empe-testnet-2)</small></label>
+    <input type="text" id="chain_id" placeholder="Enter Chain ID">
+
+    <label for="project_dir">Project Directory (e.g., $HOME/.your_project): <small>(e.g., .empe-chain)</small></label>
+    <input type="text" id="project_dir" placeholder="Enter Project Directory">
+
+    <label for="genesis_url">Genesis File URL: <small>(e.g., https://server-5.coinsspor.com/testnet/empeiria/genesis.json)</small></label>
+    <input type="url" id="genesis_url" placeholder="Enter Genesis File URL">
+
+    <label for="addrbook_url">Addrbook File URL: <small>(e.g., https://server-5.coinsspor.com/testnet/empeiria/addrbook.json)</small></label>
+    <input type="url" id="addrbook_url" placeholder="Enter Addrbook File URL">
+
+    <label for="seeds">Seeds: <small>(e.g., seednode@server:port)</small></label>
+    <input type="text" id="seeds" placeholder="Enter Seeds (comma separated)">
+
+    <label for="peers">Peers: <small>(e.g., peernode@server:port)</small></label>
+    <input type="text" id="peers" placeholder="Enter Peers (comma separated)">
+
+    <label for="snapshot_url">Snapshot URL (.tar.lz4): <small>(e.g., https://server-5.coinsspor.com/testnet/empeiria/empeiria_2024-08-20_1043879_snap.tar.lz4)</small></label>
+    <input type="url" id="snapshot_url" placeholder="Enter Snapshot URL">
+
+    <div class="warning" id="warning">Note: Snapshot URL is empty. The script will skip the snapshot download if left empty.</div>
+
+    <label for="binary_repo">Binary Repository URL: <small>(e.g., https://github.com/empe-io/empe-chain-releases/raw/master/v0.1.0/emped_linux_amd64.tar.gz)</small></label>
+    <input type="url" id="binary_repo" placeholder="Enter Binary Repository URL">
+
+    <label for="binary_name">Binary Name: <small>(e.g., emped, gaiad)</small></label>
+    <input type="text" id="binary_name" placeholder="Enter Binary Name">
+
+    <label for="minimum_gas_prices">Minimum Gas Prices: <small>(e.g., 0.0001uempe)</small></label>
+    <input type="text" id="minimum_gas_prices" placeholder="Enter Minimum Gas Prices">
+
+    <label for="keyring_backend">Keyring Backend (Choose between os, file, test): <small>Default: test</small></label>
+    <input type="text" id="keyring_backend" placeholder="Enter Keyring Backend (optional)">
+
+    <button type="button" onclick="fillExample()" class="example-btn">Fill Example</button>
+    <button type="button" onclick="generateScript()">Generate Script</button>
+
+    <textarea id="output" placeholder="Generated script will appear here..."></textarea>
+</div>
+
+<script>
+    function fillExample() {
+        document.getElementById('wallet').value = "mywallet";
+        document.getElementById('moniker').value = "mymoniker";
+        document.getElementById('port').value = "17";
+        document.getElementById('chain_id').value = "empe-testnet-2";
+        document.getElementById('project_dir').value = ".empe-chain";
+        document.getElementById('genesis_url').value = "https://server-5.coinsspor.com/testnet/empeiria/genesis.json";
+        document.getElementById('addrbook_url').value = "https://server-5.coinsspor.com/testnet/empeiria/addrbook.json";
+        document.getElementById('seeds').value = "20ca5fc4882e6f975ad02d106da8af9c4a5ac6de@empeiria-testnet-seed.coinsspor.com:28656";
+        document.getElementById('peers').value = "03aa072f917ed1b79a14ea2cc660bc3bac787e82@empeiria-testnet-peer.coinsspor.com:28656";
+        document.getElementById('snapshot_url').value = "https://server-5.coinsspor.com/testnet/empeiria/empeiria_2024-08-20_1043879_snap.tar.lz4";
+        document.getElementById('binary_repo').value = "https://github.com/empe-io/empe-chain-releases/raw/master/v0.1.0/emped_linux_amd64.tar.gz";
+        document.getElementById('binary_name').value = "emped";
+        document.getElementById('minimum_gas_prices').value = "0.0001uempe";
+        document.getElementById('keyring_backend').value = "test";
+
+        document.getElementById('warning').style.display = 'none';
+    }
+
+    function generateScript() {
+        const wallet = document.getElementById('wallet').value;
+        const moniker = document.getElementById('moniker').value;
+        const cust_port = document.getElementById('port').value || '26';
+        const chainId = document.getElementById('chain_id').value;
+        const projectDir = document.getElementById('project_dir').value;
+        const genesisUrl = document.getElementById('genesis_url').value;
+        const addrbookUrl = document.getElementById('addrbook_url').value;
+        const seeds = document.getElementById('seeds').value;
+        const peers = document.getElementById('peers').value;
+        const snapshotUrl = document.getElementById('snapshot_url').value;
+        const binaryRepo = document.getElementById('binary_repo').value;
+        const binaryName = document.getElementById('binary_name').value || 'emped';
+        const minimumGasPrices = document.getElementById('minimum_gas_prices').value || '0.0001uempe';
+        const keyringBackend = document.getElementById('keyring_backend').value || 'test';
+
+        if (!snapshotUrl) {
+            document.getElementById('warning').style.display = 'block';
+        } else {
+            document.getElementById('warning').style.display = 'none';
+        }
+
+        const script = `#!/bin/bash
+
+# Define color variables
+GREEN="\\e[1m\\e[1;32m"
+RED="\\e[1m\\e[1;31m"
+BLUE='\\033[0;34m'
+NC="\\e[0m"
+
+# Print Logo and Welcome Message
+echo -e "\\033[0;32m"
+echo "==============================="
+echo "     COINSSPOR NODE CENTER     "
+echo "==============================="
+echo -e "\\e[0m"
+echo "Welcome to the COINSSPOR Node Setup!"
+echo "This script will guide you through the node installation process."
+read -p "Do you want to continue with the installation? (yes/no): " answer
+if [ "\$answer" != "yes" ]; then
+    echo "Installation aborted."
+    exit 1
+fi
+
+# Green text output function
+printGreen() {
+    echo -e "\${GREEN}\${1}\${NC}"
+}
+
+# Updating packages and installing dependencies
+printGreen "2. Updating packages..." && sleep 1
+sudo apt update
+
+printGreen "3. Installing dependencies..." && sleep 1
+sudo apt install curl git wget htop tmux build-essential jq make lz4 gcc unzip -y
+
+# Setting variables
+echo "export WALLET=\\"${wallet}\\"" >> $HOME/.bash_profile
+echo "export MONIKER=\\"${moniker}\\"" >> $HOME/.bash_profile
+echo "export EMPED_CHAIN_ID=\\"${chainId}\\"" >> $HOME/.bash_profile
+echo "export EMPED_PORT=\\"${cust_port}\\"" >> $HOME/.bash_profile
+echo "export BINARY_NAME=\\"${binaryName}\\"" >> $HOME/.bash_profile
+echo "export MINIMUM_GAS_PRICES=\\"${minimumGasPrices}\\"" >> $HOME/.bash_profile
+echo "export KEYRING_BACKEND=\\"${keyringBackend}\\"" >> $HOME/.bash_profile
+source $HOME/.bash_profile
+
+# Display user inputs
+echo -e "Moniker:        \\e[1m\\e[32m${moniker}\\e[0m"
+echo -e "Wallet:         \\e[1m\\e[32m${wallet}\\e[0m"
+echo -e "Chain id:       \\e[1m\\e[32m${chainId}\\e[0m"
+echo -e "Node custom port:  \\e[1m\\e[32m${cust_port}\\e[0m"
+echo -e "Binary name:    \\e[1m\\e[32m${binaryName}\\e[0m"
+echo -e "Minimum gas prices: \\e[1m\\e[32m${minimumGasPrices}\\e[0m"
+echo -e "Keyring backend: \\e[1m\\e[32m${keyringBackend}\\e[0m"
+
+# Installing Go if needed
+printGreen "1. Installing go..." && sleep 1
+cd $HOME
+GO_VERSION="1.22.3"
+wget "https://golang.org/dl/go$GO_VERSION.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$GO_VERSION.linux-amd64.tar.gz"
+rm "go$GO_VERSION.linux-amd64.tar.gz"
+[ ! -f ~/.bash_profile ] && touch ~/.bash_profile
+echo "export PATH=\\$PATH:/usr/local/go/bin:~/go/bin" >> ~/.bash_profile
+source $HOME/.bash_profile
+[ ! -d ~/go/bin ] && mkdir -p ~/go/bin
+
+echo $(go version) && sleep 1
+
+# Installing binary from repository
+printGreen "4. Installing binary..." && sleep 1
+cd $HOME
+wget ${binaryRepo}
+tar -xvf $(basename ${binaryRepo})
+rm $(basename ${binaryRepo})
+chmod +x ${binaryName}
+mv ${binaryName} ~/go/bin
+
+# Configuring and initializing the app
+printGreen "5. Configuring and initializing the app..." && sleep 1
+${binaryName} config node tcp://localhost:\${EMPED_PORT}657
+${binaryName} config keyring-backend ${keyringBackend}
+${binaryName} config chain-id \${EMPED_CHAIN_ID}
+${binaryName} init \${MONIKER} --chain-id \${EMPED_CHAIN_ID}
+sleep 1
+echo done
+
+# Downloading genesis and addrbook
+printGreen "6. Downloading genesis and addrbook..." && sleep 1
+wget -O $HOME/${projectDir}/config/genesis.json ${genesisUrl}
+wget -O $HOME/${projectDir}/config/addrbook.json ${addrbookUrl}
+sleep 1
+echo done
+
+# Adding seeds, peers, and configuring custom ports
+printGreen "7. Adding seeds, peers, configuring custom ports, pruning, minimum gas price..." && sleep 1
+SEEDS="${seeds}"
+PEERS="${peers}"
+sed -i -e "/^\\[p2p\\]/,/^\\[/{s/^[[:space:]]*seeds *=.*/seeds = \\"$SEEDS\\"/}" \\
+       -e "/^\\[p2p\\]/,/^\\[/{s/^[[:space:]]*persistent_peers *=.*/persistent_peers = \\"$PEERS\\"/}" \\
+       $HOME/${projectDir}/config/config.toml
+
+# Custom port configuration in app.toml
+sed -i.bak -e "s%:1317%:\${EMPED_PORT}317%g;
+s%:8080%:\${EMPED_PORT}080%g;
+s%:9090%:\${EMPED_PORT}090%g;
+s%:9091%:\${EMPED_PORT}091%g;
+s%:8545%:\${EMPED_PORT}545%g;
+s%:8546%:\${EMPED_PORT}546%g;
+s%:6065%:\${EMPED_PORT}065%g" $HOME/${projectDir}/config/app.toml
+
+# set custom ports in config.toml file
+sed -i.bak -e "s%:26658%:\${EMPED_PORT}658%g;
+s%:26657%:\${EMPED_PORT}657%g;
+s%:6060%:\${EMPED_PORT}060%g;
+s%:26656%:\${EMPED_PORT}656%g;
+s%^external_address = \\"\\"%external_address = \\"$(wget -qO- eth0.me):\${EMPED_PORT}656\\"%;
+s%:26660%:\${EMPED_PORT}660%g" $HOME/${projectDir}/config/config.toml
+
+# Pruning and gas price configuration
+sed -i -e "s/^pruning *=.*/pruning = \\"custom\\"/" $HOME/${projectDir}/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \\"100\\"/" $HOME/${projectDir}/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \\"50\\"/" $HOME/${projectDir}/config/app.toml
+sed -i 's|minimum-gas-prices =.*|minimum-gas-prices = "${minimumGasPrices}"|g' $HOME/${projectDir}/config/app.toml
+sed -i -e "s/prometheus = false/prometheus = true/" $HOME/${projectDir}/config/config.toml
+sed -i -e "s/^indexer *=.*/indexer = \\"null\\"/" $HOME/${projectDir}/config/config.toml
+sleep 1
+echo done
+
+# Creating service file and starting the node
+sudo tee /etc/systemd/system/${binaryName}.service > /dev/null <<EOF
+[Unit]
+Description=${binaryName} node
+After=network-online.target
+[Service]
+User=$USER
+WorkingDirectory=$HOME/${projectDir}
+ExecStart=$(which ${binaryName}) start --home $HOME/${projectDir}
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Downloading snapshot and starting the node
+printGreen "8. Downloading snapshot and starting node..." && sleep 1
+${binaryName} tendermint unsafe-reset-all --home $HOME/${projectDir}
+if curl -s --head curl ${snapshotUrl} | head -n 1 | grep "200" > /dev/null; then
+  curl ${snapshotUrl} | lz4 -dc - | tar -xf - -C $HOME/${projectDir}
+else
+  echo "no snapshot found"
+fi
+
+# Enabling and starting the service
+sudo systemctl daemon-reload
+sudo systemctl enable ${binaryName}.service
+sudo systemctl restart ${binaryName}.service && sudo journalctl -u ${binaryName}.service -f
+`;
+
+        document.getElementById('output').value = script;
+    }
+</script>
+
+</body>
+</html>
