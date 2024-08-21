@@ -1,4 +1,6 @@
 # Cosmos Project Auto-Install Script Generator
+![image](https://github.com/user-attachments/assets/e97b1674-98aa-4ff1-b682-c020e30d161b)
+
 
 ## Overview
 
